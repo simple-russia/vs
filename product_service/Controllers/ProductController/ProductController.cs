@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using product_service.Models;
 
 namespace product_service.Controllers;
 
@@ -6,29 +8,49 @@ namespace product_service.Controllers;
 [Route("api/products")]
 public class ProductController : ControllerBase
 {
-    public ProductController()
-    {
+    public ProductServiceContext _context;
 
+    public ProductController(ProductServiceContext context)
+    {
+        _context = context;
     }
 
     [HttpGet()]
     [Route("GetAllProducts")]
     public ActionResult GetProducts()
     {
-        return Ok();
+        var products = _context.Products.ToList();
+        return Ok(products);
     }
 
     [HttpGet()]
     [Route("product")]
-    public ActionResult GetProduct([FromQuery] string id)
+    public async Task<ActionResult> GetProduct([FromQuery] int id)
     {
-        return Ok();
+        var product = await _context.Products.SingleOrDefaultAsync(pr => pr.Id == id);
+
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(product);
     }
 
     [HttpDelete()]
     [Route("product")]
-    public ActionResult DeleteProduct([FromQuery] string id)
+    public async Task<ActionResult> DeleteProduct([FromQuery] int id)
     {
+        var product = await _context.Products.SingleOrDefaultAsync(pr => pr.Id == id);
+
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        await _context.Products.Where(p => p.Id == id).ExecuteDeleteAsync();
+        _context.SaveChanges();
+
         return Ok();
     }
 
@@ -36,13 +58,36 @@ public class ProductController : ControllerBase
     [Route("product")]
     public ActionResult CreateProduct([FromBody] CreateProductInputDTO dto)
     {
+        var product = new Product
+        {
+            name = dto.name,
+            price = dto.price,
+            unit = dto.unit,
+        };
+
+        _context.Products.Add(product);
+        _context.SaveChanges();
+
         return Ok();
     }
 
     [HttpPut()]
     [Route("product")]
-    public ActionResult UpdateProduct([FromBody] EditProductInputDTO dto)
+    public async Task<ActionResult> UpdateProduct([FromBody] EditProductInputDTO dto)
     {
+        var product = await _context.Products.SingleOrDefaultAsync(pr => pr.Id == dto.productId);
+
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        product.name = dto.name;
+        product.price = dto.price;
+        product.unit = dto.unit;
+
+        _context.SaveChanges();
+
         return Ok();
     }
 }
