@@ -2,7 +2,7 @@
     "Routes": [
         {
             "UpstreamPathTemplate": "/api/products/{route}",
-            "UpstreamHttpMethod": ["GET", "POST", "PUT"],
+            "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
             
             "DownstreamScheme": "http",
             "DownstreamHostAndPorts": [
@@ -12,6 +12,19 @@
                 }
             ],
             "DownstreamPathTemplate": "/api/products/{route}"
+        },
+        {
+            "UpstreamPathTemplate": "/api/inventory/{route}",
+            "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
+            
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "127.0.0.1",
+                    "Port": "5002"
+                }
+            ],
+            "DownstreamPathTemplate": "/api/inventory/{route}"
         }
     ],
     "GlobalConfiguration": {
