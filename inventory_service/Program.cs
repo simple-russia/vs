@@ -1,7 +1,13 @@
+using System.Text;
+using inventory_service.Consumers;
 using inventory_service.Models;
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var dbConnection = builder.Configuration.GetConnectionString("DbConnection");
 
 // Add services to the container.
 
@@ -12,7 +18,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<InventoryContext>(o =>
 {
-    o.UseNpgsql(builder.Configuration.GetConnectionString("DbConnection"));
+    o.UseNpgsql(dbConnection);
 });
 
 var app = builder.Build();
@@ -34,6 +40,9 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<InventoryContext>();
     dbContext.Database.Migrate();
+
 }
+
+new RabbitMQListener(dbConnection);
 
 app.Run();

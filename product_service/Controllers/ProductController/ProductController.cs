@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using product_service.Models;
+using product_service.Services;
 
 namespace product_service.Controllers;
 
@@ -9,10 +10,12 @@ namespace product_service.Controllers;
 public class ProductController : ControllerBase
 {
     public ProductServiceContext _context;
+    public MessageProducer _messageProducer;
 
-    public ProductController(ProductServiceContext context)
+    public ProductController(ProductServiceContext context, MessageProducer messageProducer)
     {
         _context = context;
+        _messageProducer = messageProducer;
     }
 
     [HttpGet()]
@@ -67,6 +70,8 @@ public class ProductController : ControllerBase
 
         _context.Products.Add(product);
         _context.SaveChanges();
+
+        _messageProducer.SendMessage<Product>(product);
 
         return Ok();
     }

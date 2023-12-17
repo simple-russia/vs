@@ -1,5 +1,6 @@
 using product_service.Models;
 using Microsoft.EntityFrameworkCore;
+using product_service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,8 @@ builder.Services.AddDbContext<ProductServiceContext>(o =>
 {
     o.UseNpgsql(builder.Configuration.GetConnectionString("DbConnection"));
 });
+
+builder.Services.AddScoped<MessageProducer>();
 
 var app = builder.Build();
 
