@@ -22,7 +22,7 @@ const ActionColumn = ({ productId }) => {
 
 const cols = [
   {
-    title: "Продукт",
+    title: "Товар",
     dataIndex: "name",
     key: "name",
   },

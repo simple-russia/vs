@@ -8,17 +8,17 @@ import { useState } from "react";
 const tabItems = [
   {
     key: "products",
-    label: "Products",
+    label: "Товары",
     children: <Products />,
   },
   {
     key: "orders",
-    label: "Orders",
+    label: "Заказы",
     children: <Orders />,
   },
   {
     key: "inventory",
-    label: "Inventory",
+    label: "Инвентарь",
     children: <Inventory />,
   },
 ];
@@ -31,7 +31,7 @@ function App() {
     <div className="App">
       <div>
         <Button onClick={() => setLoginModalOpen(true)} type="primary">
-          Log in
+          Войти в учетную запись
         </Button>
       </div>
 

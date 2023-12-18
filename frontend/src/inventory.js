@@ -17,14 +17,17 @@ const ActionColumn = ({ item }) => {
 
 const cols = [
   {
-    title: "Product",
-    dataIndex: "id",
-    key: "id",
+    title: "Товар",
+    dataIndex: "name",
+    key: "name",
   },
   {
-    title: "Amount",
+    title: "Кол-во на складе",
     dataIndex: "amount",
     key: "amount",
+    render: (_, item) => {
+      return <div>{item.amount} {item.unit}.</div>
+    }
   },
   {
     title: "",
