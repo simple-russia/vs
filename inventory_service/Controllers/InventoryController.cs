@@ -34,14 +34,17 @@ public class InventoryController : ControllerBase
 
             if (productOfItem != null)
             {
-                inventoryItemsDTOs.Add(new GetInventoryItemOutputDTO {
+                inventoryItemsDTOs.Add(new GetInventoryItemOutputDTO
+                {
                     id = item.Id,
                     productId = productOfItem.Id,
                     amount = item.Amount,
                     name = productOfItem.name,
                     unit = productOfItem.unit,
                 });
-            } else {
+            }
+            else
+            {
                 Console.WriteLine($"[x] Could not find product for item {item.Id}");
             }
         }
@@ -50,14 +53,41 @@ public class InventoryController : ControllerBase
     }
 
     [HttpPost("increaseProductAmount")]
-    public async Task<ActionResult> IncreaseProductAmount([FromQuery] string productid) // TODO add dto
+    public async Task<ActionResult> IncreaseProductAmount([FromBody] IncreaseProductAmountInputDTO dto)
     {
-        return Ok();
+        var item = await _context.InventoryItems.SingleOrDefaultAsync(it => it.Id == dto.itemId);
+
+        if (item == null)
+        {
+            return NotFound();
+        }
+
+        item.Amount += dto.increaseAmount;
+        _context.SaveChanges();
+
+        return Ok(item);
     }
 
     [HttpPost("decreaseProductAmount")]
-    public async Task<ActionResult> DecreaseProductAmount([FromQuery] string productid)
+    public async Task<ActionResult> DecreaseProductAmount([FromBody] DecreaseProductAmountInputDTO dto)
     {
-        return Ok();
+        var item = await _context.InventoryItems.SingleOrDefaultAsync(it => it.Id == dto.itemId);
+
+        if (item == null)
+        {
+            return NotFound();
+        }
+
+        if (item.Amount - dto.decreaseAmount >= 0)
+        {
+            item.Amount -= dto.decreaseAmount;
+            _context.SaveChanges();
+        }
+        else
+        {
+            return BadRequest("Amount can't be negative");
+        }
+
+        return Ok(item);
     }
 }
